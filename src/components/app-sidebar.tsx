@@ -28,13 +28,14 @@ import {
   ShoppingCart,
   Calendar1Icon,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const data = {
-  user: {
-    name: "admin",
-    email: "admin@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+  // user: {
+  //   name: "admin",
+  //   email: "admin@gmail.com",
+  //   avatar: "/avatars/shadcn.jpg",
+  // },
   navMain: [
     {
       title: "Dashboard",
@@ -131,6 +132,9 @@ const data = {
   ],
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+  console.log("Session data in AppSidebar:", session); // Log the session data for debugging
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -141,7 +145,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               render={<a href="#" />}
             >
               <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Smart ERP</span>
+              <span className="text-base font-semibold">SmartERP</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -152,7 +156,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {session?.user ? (
+          <NavUser
+            user={{
+              name: session?.user?.name ?? undefined,
+              email: session?.user?.email ?? undefined,
+              avatar: session?.user?.image ?? undefined,
+            }}
+          />
+        ) : (
+          <div className="p-4 text-center text-sm text-muted-foreground">
+            Not logged in
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

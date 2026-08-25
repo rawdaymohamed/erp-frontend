@@ -1,13 +1,22 @@
+"use client";
+import { Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import data from "./data.json";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default function DashboardLayout({ children }: LayoutProps<"/">) {
+  const { status } = useSession();
+  if (status === "loading") {
+    return (
+      <Loader2 className="mx-auto mt-32 h-12 w-12 animate-spin text-muted-foreground" />
+    );
+  }
+  if (status === "unauthenticated") {
+    redirect("/login");
+  }
   return (
     <SidebarProvider
       style={
